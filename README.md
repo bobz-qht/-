@@ -27,3 +27,26 @@
 - Python 기초 복습 (딕셔너리, 함수)
 - HTTP/JSON/API 개념 이해
 - 공개 API로 데이터 가져오는 스크립트 제작
+
+## 2주차 - Day 1 (Open-Meteo API 연동)
+
+### 오늘 한 것
+- 딕셔너리, 함수 복습
+- requests 라이브러리 설치
+- Claude Code로 Open-Meteo API 연동 스크립트(weather.py) 제작
+  - 대구 위도/경도 기준 현재 기온/날씨/바람 출력
+- git push 중 원격 저장소(README.md)와 충돌 → git pull로 병합 → push 성공
+
+### 배운 점
+- 딕셔너리: 순서가 아니라 이름(key)으로 값을 찾음 → JSON과 구조가 동일해서 API 데이터 다룰 때 필수
+- API: 다른 서버의 데이터/기능을 요청-응답으로 빌려쓰는 통로
+- JSON: 서버가 텍스트로 보내는 딕셔너리 형태 데이터. `.json()`으로 파이썬 딕셔너리로 변환
+- `.get(key, 기본값)` vs `[key]`: `[key]`는 없는 키 접근 시 KeyError로 프로그램이 죽지만, `.get()`은 못 찾으면 기본값을 대신 반환해 프로그램이 안 죽게 함 (API 응답 실패 대비 안전장치)
+- git merge 충돌: 원격에 로컬에 없는 커밋(README)이 있으면 push가 거부됨 → `git pull`로 먼저 받아와 병합 후 push해야 함 → Vim 편집기에서 `:wq`로 저장 후 종료하는 법 익힘
+
+### 막힌 점
+- git push 거부 (remote에 로컬에 없는 변경사항 존재) → git pull → merge commit(Vim 화면) → push 순서로 해결
+
+### 다음 목표
+- 문서 요약기(6주차 예정) 또는 다른 공개 API로 추가 스크립트 실습
+- HTTP GET/POST 차이, 상태 코드(200, 404 등) 개념 짧게 정리
