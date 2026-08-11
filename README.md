@@ -122,21 +122,31 @@
 - day3_todo.py: 추가/완료처리/목록보기/삭제 + JSON 영속성까지 갖춘 완성형 todo 앱
 - 로드맵 3~4주차 "미니 프로젝트 완성" 기준 충족
 
-## 3주차 - Day 4 (Anthropic Claude 텍스트 요약기)
+## 3주차 - Day 4 (OCR + Anthropic Claude 텍스트 요약기)
 
 ### 오늘 한 것
 - Anthropic 콘솔에서 Claude API 키 발급 및 `python-dotenv`로 `.env`에서 관리
 - `py/day4_summarizer.py`에서 `open`/`with`로 `py/input.txt`를 읽고 요약 요청
 - `client.messages.create()`로 Claude 모델 호출 성공
 - API 호출을 `try/except`로 감싸서 예외를 처리하도록 개선
-- `.gitignore` 생성: `.env`, `__pycache__/`, `*.py[cod]` 제외 처리
+- `py/day4_pdf_summarizer.py`로 `pypdf` 기반 PDF 텍스트 추출 구현
+  - 한글 폰트 인코딩 문제를 디버깅하고 `try/except`로 파일 없음 오류 처리
+  - `enumerate()`로 페이지 구분자를 추가하여 출력 정리
+- `py/day4_ocr.py`로 `pytesseract` 기반 이미지 OCR 처리 구현
+  - Tesseract 설치와 PATH 환경변수 설정 문제를 해결
+  - `lang='kor+eng'`로 한/영 동시 인식 지원
+- `py/day4_ocr_summarizer.py`에서 이미지 → OCR → AI 요약 파이프라인 완성
+  - 기존 두 도구를 조립하고 중복 import 제거 및 불필요 코드 정리 진행
+- `.gitignore`에 `.env`, `__pycache__/`, `*.py[cod]` 포함 유지
 
 ### 배운 점
 - 비밀 키는 저장소에 직접 두지 않고 `.env`로 분리해야 안전하다
 - 파일을 읽어와서 모델 요청 텍스트로 사용하는 패턴은 재사용성이 높다
 - API 호출은 항상 예외가 발생할 수 있으므로 `try/except`로 감싸야 안정적이다
-- `git log -- .env`로 과거 커밋 이력을 확인할 수 있다
+- PDF 파싱과 OCR을 함께 사용하면 텍스트 데이터 수집 범위를 크게 확장할 수 있다
+- OCR 결과를 요약 파이프라인에 연결하면 이미지 기반 문서 처리 자동화가 가능하다
 
 ### 결과
-- 로드맵 5주차 목표(텍스트 요약기) 달성
+- 로드맵 7주차 목표(OCR 도구) 달성
 - `README.md` 문서도 최신 작업 내용으로 업데이트됨
+- 8주차(음성/유튜브 요약)로 이어질 예정
