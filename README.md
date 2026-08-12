@@ -150,3 +150,29 @@
 - 로드맵 7주차 목표(OCR 도구) 달성
 - `README.md` 문서도 최신 작업 내용으로 업데이트됨
 - 8주차(음성/유튜브 요약)로 이어질 예정
+
+## 5일차 (2개월차 8주차) — 유튜브 요약 도구
+
+### 만든 것
+- `day4_summarizer.py`: 텍스트 요약 로직을 `summarize_text(text)` 함수로 리팩토링 (재사용 가능하게)
+- `day5_youtube_summarizer.py`: `youtube-transcript-api`로 자막 텍스트 추출 → 요약 (빠름, 자막 있는 영상만 처리 가능)
+- `day5_whisper_summarizer.py`: `yt-dlp`로 오디오 다운로드 → `whisper`로 음성인식 → 요약 (느리지만 자막 없는 영상도 처리 가능)
+- `day5_smart_summarizer.py`: 자막 추출을 먼저 시도하고, 실패하면 자동으로 Whisper 방식으로 전환하는 fallback 로직 구현
+
+### 배운 것
+- **`print`와 `return`의 차이** — 값을 화면에 보여주는 것과 다른 코드가 재사용할 수 있게 값을 넘겨주는 것은 다르다
+- **`import`(모듈 통째로) vs `from ... import`(필요한 것만)** 차이와 각각의 호출 방식
+- **`if __name__ == "__main__":`의 역할** — 파일을 직접 실행할 때와 다른 파일에서 import될 때를 구분
+- **외부 라이브러리는 버전이 바뀌면 API가 통째로 바뀔 수 있다** (`youtube-transcript-api`가 v1.0에서 `get_transcript` 정적 메서드를 삭제하고 인스턴스 기반 `.fetch()` 방식으로 변경됨) — 에러 메시지 읽고 최신 문서 찾아서 대응하는 것도 실무 스킬
+- **try/except를 이용한 fallback 패턴** — 빠르고 가벼운 방법을 먼저 시도하고, 실패 시 느리지만 확실한 방법으로 자동 전환
+
+### 막힌 점 / 한계
+- `youtube-transcript-api`의 `get_transcript` 메서드가 최신 버전에서 삭제되어 `YouTubeTranscriptApi().fetch()` + 객체 속성 접근(`snippet.text`) 방식으로 수정
+- ffmpeg가 시스템에 설치되어 있지 않아 winget으로 별도 설치 필요 (yt-dlp의 오디오 추출에 필수)
+- Whisper `base` 모델은 크기가 작아 정확도가 떨어질 수 있음 — 실제 테스트에서 배경음/노이즈가 있는 영상에서 원본과 무관한 내용(요리 재료 등)을 생성하는 hallucination 현상 확인. 추후 `small`/`medium` 모델 비교 필요
+
+### 마일스톤
+**🎯 2개월차(AI 기능 붙이기) 전체 완료.** 텍스트 요약기, PDF 요약기, OCR 도구, 유튜브 요약기(자막/Whisper/fallback 3종)까지 작동하는 AI 도구 다수 확보.
+
+### 다음
+3개월차 진입 — 9주차: Webhook 개념 + 간단 실습
