@@ -176,3 +176,36 @@
 
 ### 다음
 3개월차 진입 — 9주차: Webhook 개념 + 간단 실습
+
+## 3개월차 - 9~10주차 (Day 6): Webhook + 조건 분기 + 이메일 연동
+
+### 오늘 만든 것
+- `day6_webhook.py`: Flask 기반 웹훅 수신 서버
+  - POST 요청으로 들어온 JSON 데이터 수신 및 콘솔 출력
+  - `event` 값에 따른 조건 분기 (`urgent` / `form_submit` / 그 외)
+  - `urgent` 이벤트 시 Gmail 앱 비밀번호(`smtplib`)로 실제 이메일 알림 발송
+  - 웹훅 로그를 리스트로 계속 누적 저장 (JSON 파일)
+
+### 배운 것
+- **Webhook**: 내가 요청을 보내는 게 아니라, 남이 보낸 요청을 받아서 반응하는 구조. 지금까지의 `requests.get()`(클라이언트 역할)과 정반대 방향
+- **Flask 기본 구조**: `@app.route()`로 URL 경로와 함수를 연결, `request.json`으로 들어온 데이터 추출, `return`으로 응답
+- **`response.json()` vs `request.json`**: 전자는 내가 요청 보낸 뒤 받는 응답 해석, 후자는 내가 서버로서 받은 요청 데이터 추출 — 방향이 반대
+- **파일 모드(`'w'` vs `'a'`) 함정**: `'w'`로 매번 저장하면 덮어써짐 → 읽어서 리스트에 append 후 다시 쓰는 패턴으로 해결
+- **데이터 유효성 방어**: 파일이 "존재하는 것"과 "내용이 유효한 것"은 별개 문제
+  - `isinstance(logs, list)`로 타입 불일치 방어 (dict가 남아있던 사례)
+  - `json.JSONDecodeError`로 빈 파일 방어
+- **Gmail 앱 비밀번호**: 실제 로그인 비밀번호 대신 프로그램 전용 키 발급, `.env`로 분리 관리 (기존 API 키 관리 패턴과 동일)
+- **`smtplib` + `MIMEText`**: 파이썬 내장 라이브러리로 SMTP 서버 접속 → 로그인 → 메일 전송
+
+### 막힌 점 / 해결
+- 서버 파일 실행 시 아무 반응 없음 → `if __name__ == '__main__': app.run(...)` 누락이 원인
+- `AttributeError: 'dict' object has no attribute 'append'` → 이전 버전 코드가 저장해둔 dict 형식 파일이 남아있어 발생 → 타입 체크 방어 코드 추가
+- `NameError: GMAIL_ADDRESS` → 코드 자체는 정상이었고 서버 자동 재시작 타이밍 문제 → 완전히 껐다 켜서 해결
+- `JSONDecodeError: Expecting value` → `webhook_log.json`이 빈 파일 상태 → `except` 절에 `JSONDecodeError` 추가로 해결
+
+### 결과
+- 로드맵 9~10주차 목표(Webhook + 조건 분기 + 이메일 연동) 달성
+- 실제 Gmail로 알림 이메일 수신 확인 완료
+
+### 다음 목표
+- 11주차: Supabase로 데이터 저장 (2개월차 도구 중 하나에 기록 저장/조회 기능 추가)
