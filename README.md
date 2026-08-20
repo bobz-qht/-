@@ -245,3 +245,47 @@
 ### 다음 목표
 - 4개월차 13주차: HTML/CSS + React 기초
 - 결과물: 랜딩페이지 1개
+
+## 4개월차 - 13주차 (Day 8): Next.js 첫 프로젝트 + 랜딩페이지
+
+### 오늘 만든 것
+- `ai-service-landing` — Next.js(App Router) 프로젝트 최초 생성
+- `app/page.tsx` — tools 배열을 `.map()`으로 순회해 AI 도구 소개 카드를
+  동적으로 렌더링하는 랜딩페이지
+- `app/globals.css` — flexbox 기반 레이아웃, 카드 스타일링
+- 프로젝트 폴더 위치 정리: `py` 폴더 안에 중첩 생성됐던
+  `ai-service-landing`을 `코딩` 루트 아래 `py`와 형제 폴더로 이동
+
+### 배운 것
+- Node.js/npm: 파이썬의 (인터프리터 + pip)에 대응하는 JS 실행 환경 +
+  패키지 매니저
+- `npx`(1회성 실행 도구) vs `npm`(설치/스크립트 관리) 차이
+- `package.json`은 파이썬의 `requirements.txt` + 설정 역할, npm 명령어는
+  이 파일이 있는 폴더에서만 동작
+- React 컴포넌트: 화면을 그리는 함수. JSX 문법은 HTML처럼 생겼지만
+  실제로는 JS 코드
+- `.map()`으로 리스트 데이터를 화면 요소로 반복 렌더링 (파이썬 for문에
+  대응) — 데이터만 바뀌면 로직 수정 없이 화면이 자동으로 따라 바뀜
+- `className`(React) vs `class`(HTML) 차이와 이유
+- CSS `display: flex`로 가로 배치, 없으면 기본값(블록 요소는 세로로 쌓임)
+- 프론트엔드(React/JS)와 백엔드(Python)는 완전히 분리된 별개 프로그램이며,
+  나중에 HTTP API로 통신하는 구조로 연결된다는 것 (Day6 Flask 웹훅
+  패턴이 이 구조의 기초)
+- Next.js 파일 이름은 프레임워크가 읽는 규칙이라 파이썬처럼 자유
+  네이밍이 안 됨 → 날짜별 기록은 git 커밋 메시지로 대체
+- `localhost:3000`은 본인 컴퓨터에서만 보이는 임시 주소, 실제 공개
+  배포는 16주차 Vercel 단계에서 진행 예정
+
+### 막힌 점 / 해결
+- `npm run dev`를 `package.json` 없는 폴더에서 실행해 ENOENT 에러 →
+  프로젝트 폴더로 이동 후 해결
+- VS Code 탐색기 대신 검색(Search) 패널을 보고 있어 파일을 못 찾음 →
+  탐색기 패널로 전환하거나 프로젝트 폴더를 새 창으로 열어 해결
+- `ai-service-landing`이 `py` 폴더 안에 중첩 생성됨 → git 저장소
+  루트가 `코딩`임을 `git rev-parse --show-toplevel`로 확인 후, VS Code
+  파일 워처로 인한 폴더 rename 잠금(Device or resource busy)을
+  우회해 복사/삭제 방식으로 이동, `node_modules`/`.next`는 재생성
+
+### 다음 목표
+- `app/layout.tsx` 다루기 또는 CSS 반응형(모바일 대응)
+- 4개월차 14주차: 로그인 기능 진입 준비
