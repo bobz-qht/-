@@ -289,3 +289,34 @@
 ### 다음 목표
 - `app/layout.tsx` 다루기 또는 CSS 반응형(모바일 대응)
 - 4개월차 14주차: 로그인 기능 진입 준비
+
+## 4개월차 - 14주차 (Day 9): 로그인 기능 (Supabase Auth 연동)
+
+### 오늘 만든 것
+- `app/layout.tsx` — 메타데이터(title/description)와 `lang` 속성을 실제 프로젝트에 맞게 수정
+- `app/globals.css` — `@media (max-width: 600px)` 반응형 스타일 추가, 로그인 폼 스타일 추가
+- `lib/supabase.ts` — 브라우저용 Supabase 클라이언트 생성 (환경변수로 URL/anon key 관리)
+- `app/login/page.tsx` — 실제로 작동하는 로그인 페이지: 이메일/비번 입력 → Supabase Auth 인증 → 성공 시 홈 이동, 실패 시 에러 메시지
+- `.env.local`에 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` 설정 (anon 공개키만 사용, service_role 미사용)
+
+### 배운 것
+- 서버 컴포넌트 vs 클라이언트 컴포넌트(`"use client"`) — 사용자 입력/상태를 다루려면 클라이언트 컴포넌트 선언 필요
+- `useState`는 `const`로 선언되어 직접 재할당 불가능 — 반드시 `setX()`로 값도 바꾸고 React에게 리렌더링 신호도 함께 줘야 함
+- Controlled input 패턴(`value` + `onChange`)으로 입력값과 state 동기화
+- `async`/`await`로 Supabase 인증 응답 기다리기
+- `NEXT_PUBLIC_` 접두어 붙은 값만 브라우저에 노출됨 — `anon` 키는 공개돼도 안전하지만 `service_role` 키를 여기에 넣으면 DB 전체가 뚫릴 수 있음
+- Next.js는 서버 시작 시 한 번만 `.env.local`을 읽음 — 추가/수정하면 서버 재시작 필요
+
+### 막힌 점 / 해결
+- `day1_organize_files.py`를 "파이썬 작동 테스트용"으로 실행했다가 `py` 폴더 안 스크립트 전부가 `py/py/`로 이동됨 → `move`/`rmdir`로 복구
+- `lib` 폴더를 `app` 폴더 안에 잘못 생성 + 파일명 오타(`supbase.ts`) → `Cannot find module` 에러 → 위치/파일명 수정으로 해결
+- `.env.local` 파일을 안 만들고 서버를 켜서 `supabaseUrl is required` 런타임 에러 → 파일 생성 후 서버 재시작으로 해결
+
+### 결과
+- 로드맵 14주차 목표(로그인 기능) 달성 — 실제 Supabase 계정으로 로그인 성공/실패 케이스 둘 다 확인 완료
+
+### 다음 회차 할 일 (중요 — 새로운 진도 아님)
+8~9일 만에 로드맵 진도를 빠르게 뺐지만 "밑 빠진 독에 물 붓는 느낌"이라 판단, 다음 세션은 새 진도를 나가지 않고 전체 복습으로 진행:
+- 처음부터 뭘 계획했고 무슨 목표로 배우고 있는지, 지금까지 만든 시스템 전체 구조를 다시 정리
+- 지금까지 작성한 코드(1~9일차, `py` 폴더 스크립트 전부 + `ai-service-landing` 전체)를 하나하나 다시 뜯어보면서 왜 이 코드/이 구조로 짰는지 재점검
+- 속도보다 이해도 확인이 목적 — 새 진도(회원가입, 보호된 페이지 등)는 이 복습 끝난 뒤 진행
