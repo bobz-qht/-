@@ -1,0 +1,12 @@
+python-dotenv
+anthropic
+pypdf
+pytesseract
+Pillow
+requests
+youtube-transcript-api
+yt-dlp
+openai-whisper
+flask
+flask-cors
+supabase
