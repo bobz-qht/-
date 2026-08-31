@@ -320,3 +320,34 @@
 - 처음부터 뭘 계획했고 무슨 목표로 배우고 있는지, 지금까지 만든 시스템 전체 구조를 다시 정리
 - 지금까지 작성한 코드(1~9일차, `py` 폴더 스크립트 전부 + `ai-service-landing` 전체)를 하나하나 다시 뜯어보면서 왜 이 코드/이 구조로 짰는지 재점검
 - 속도보다 이해도 확인이 목적 — 새 진도(회원가입, 보호된 페이지 등)는 이 복습 끝난 뒤 진행
+
+## 4개월차 - 15주차 (Day 10): 텍스트 요약기 웹 연결 + 파이썬 가상환경 정리
+
+### 오늘 한 것
+- 8~9일차 전체 복습: py 스크립트와 Next.js 코드를 처음부터 다시 검토, 프레임워크/라이브러리 차이, 브라우저에서 JavaScript를 쓰는 이유, 클라이언트/서버 컴포넌트 구분을 재정리
+- `day10_summarize_api.py` 제작 — Flask + flask-cors로 `/summarize` POST 엔드포인트 생성, 기존 `day4_summarizer.py`의 `summarize_text()` 재사용
+- `app/summarize/page.tsx` 제작 — textarea 입력 → `fetch()`로 파이썬 서버 호출 → 요약 결과를 화면에 표시
+- 파이썬 여러 버전(Python312, Python314, conda facefusion) 충돌로 `ModuleNotFoundError` 발생 → `py` 폴더 전용 venv 생성으로 해결
+- `requirements.txt` 최초 작성 (dotenv, anthropic, pypdf, pytesseract, Pillow, requests, youtube-transcript-api, yt-dlp, whisper, flask, flask-cors, supabase)
+- 로그인 페이지(`/login`)와 요약기 페이지(`/summarize`) 둘 다 브라우저에서 실제 작동 확인 완료
+
+### 배운 것
+- 프레임워크 vs 라이브러리: "누가 누구를 호출하는가"로 구분 — Flask/Next.js는 프레임워크(틀이 내 코드를 호출), requests/pytesseract는 라이브러리(내가 도구를 호출)
+- 브라우저는 JavaScript 엔진만 내장돼 있어서 화면(UI) 관련 코드는 무조건 JS/TS 계열이어야 함 — Python은 브라우저 안에서 실행 불가
+- 프론트엔드(Next.js)와 백엔드(Python)는 완전히 분리된 별개 프로그램이며, HTTP로 요청/응답을 주고받는 구조 (Day6 웹훅 패턴의 확장)
+- CORS: 브라우저가 다른 포트로 가는 요청을 기본 차단하는 보안 정책, `flask-cors`로 해제
+- `fetch()`: 브라우저 내장 HTTP 요청 도구, `requests.post()`의 JS 버전
+- pip은 파이썬 설치본마다 패키지를 따로 관리함 — 시스템에 파이썬이 여러 개면 `pip install`이 엉뚱한 파이썬에 설치될 수 있음 → `python -m pip install`로 방지
+- venv: 프로젝트 전용 격리 환경. conda 가상환경(facefusion)과 같은 개념의 더 가벼운 내장 도구
+
+### 막힌 점 / 해결
+- `day10_summarize_api.py` 실행 시 `ModuleNotFoundError: No module named 'dotenv'` — 시스템에 Python312/Python314 두 버전이 있는데, 기본으로 잡히는 파이썬엔 필요한 패키지가 없었음 → `py` 폴더에 venv 생성 후 `requirements.txt`로 재설치하여 해결
+- 홈 화면 카드가 아직 클릭이 안 돼서 로그인/요약기로 바로 진입이 안 됨 — 카드가 `<div>`로만 돼있고 `Link` 연결이 안 된 상태. 오늘은 주소 직접 입력으로 우회 확인, 카드 연결은 다음 회차로 넘김
+
+### 결과
+- 로드맵 15주차 목표(2~3개월차 도구 중 하나를 웹 화면에 붙이기) 달성 — 입력창-결과창 있는 AI 웹앱(텍스트 요약기) 1개 실제 작동 확인
+
+### 다음 목표
+- 홈 화면 카드 클릭 시 `/summarize`, `/login`으로 이동하도록 `next/link` 연결
+- 리뷰에서 발견된 미해결 항목 정리: `day4_pdf_summarizer.py` 텍스트 중복 버그, `day7_pipeline.py` 예외처리 누락, `layout.tsx`의 죽은 Tailwind 클래스 정리
+- 16주차: Vercel 배포
