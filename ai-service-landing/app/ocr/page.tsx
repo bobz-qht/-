@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { saveResult } from "@/lib/supabase";
 
 export default function OcrPage() {
   const [preview, setPreview] = useState("");
@@ -39,6 +40,7 @@ export default function OcrPage() {
         }
 
         setExtractedText(data.text);
+        saveResult("OCR 추출기", data.text);
       } catch (err) {
         setErrorMsg("서버에 연결할 수 없습니다.");
       } finally {

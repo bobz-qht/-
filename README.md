@@ -413,3 +413,28 @@
 ### 다음 목표
 - 로그인한 사용자의 도구 사용 결과를 Supabase DB에 저장하는 기능 (11주차 목표와 연결)
 - 5개월차 진입 전 실제 유저 인터뷰 채널 후보 정리
+
+## 3개월차 - 11주차 (Day 13): 도구 사용 결과 Supabase 저장 + 내 기록 페이지
+
+### 오늘 만든 것
+- Supabase SQL Editor에서 `results` 테이블 생성 (`id`, `user_id`, `tool`, `output`, `created_at`) — `user_id`는 `default auth.uid()`로 자동 채워지도록 설정
+- `results` 테이블에 Row Level Security(RLS) 활성화 + 정책 2개 추가 — `results_insert_own`(본인 것만 insert 가능), `results_select_own`(본인 것만 select 가능)
+- `lib/supabase.ts`에 `saveResult(tool, output)` 함수 추가 — 로그인 상태가 아니면 저장하지 않고, 로그인 상태면 `results` 테이블에 insert
+- `app/summarize/page.tsx`, `app/ocr/page.tsx`, `app/youtube/page.tsx` 세 도구 페이지 모두 결과가 나온 직후 `saveResult()` 호출하도록 연결
+- `app/history/page.tsx` 신규 페이지 — 로그인 상태 확인 후 `results` 테이블에서 본인 기록만 최신순으로 불러와 목록으로 표시
+- `app/components/AuthNav.tsx`에 로그인 상태일 때만 보이는 "내 기록" 링크 추가
+
+### 배운 것
+- Row Level Security(RLS): 테이블 단위로 "누가 어떤 행을 읽고/쓸 수 있는지"를 DB 레벨에서 강제하는 기능 — 클라이언트 코드를 실수로 잘못 짜도 DB가 남의 데이터 접근을 막아줌
+- `auth.uid()`: RLS 정책과 컬럼 기본값 안에서 쓸 수 있는, "지금 로그인한 사용자의 id"를 반환하는 Supabase 함수
+- `create policy ... for insert with check (...)` / `for select using (...)`: insert는 `with check`(넣으려는 값 검증), select는 `using`(조회 가능한 행 필터)으로 문법이 다름
+- `default auth.uid() references auth.users(id) on delete cascade`: 컬럼 기본값으로 세션의 사용자 id를 자동으로 채우고, 그 사용자가 탈퇴하면 관련 행도 같이 삭제되게 하는 설정
+- Supabase JS 클라이언트에서 `.insert()`/`.select()`를 호출하면 RLS 정책이 자동으로 적용돼, 서버 코드에서 "내 것만 필터링"을 직접 안 짜도 됨
+
+### 결과
+- 로드맵 11주차 목표(Supabase 데이터 저장) 실제로 연결 완료 — 패키지만 설치돼 있고 실제로는 안 쓰이던 상태에서, 3개 도구의 결과가 실제로 DB에 저장되는 상태로 전환
+- 로그인한 사용자가 `/history`에서 본인이 사용한 도구 기록을 확인할 수 있는 기능 완성, RLS로 사용자 간 데이터 격리 보장
+
+### 다음 목표
+- 라이브에서 실제로 도구 사용 → 저장 → `/history` 조회까지 전체 흐름 재확인
+- 5개월차 진입 전 실제 유저 인터뷰 채널 후보 정리

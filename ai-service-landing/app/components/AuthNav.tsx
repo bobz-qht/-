@@ -33,6 +33,7 @@ export default function AuthNav() {
   if (session) {
     return (
       <div className="site-nav-right">
+        <Link href="/history" className="site-nav-link">내 기록</Link>
         <span className="site-nav-email">{session.user.email}</span>
         <button onClick={handleLogout} className="site-nav-link site-nav-button">
           로그아웃

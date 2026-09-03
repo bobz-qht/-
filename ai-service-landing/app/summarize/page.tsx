@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { saveResult } from "@/lib/supabase";
 
 export default function SummarizePage() {
   const [text, setText] = useState("");
@@ -28,6 +29,7 @@ export default function SummarizePage() {
       }
 
       setSummary(data.summary);
+      saveResult("텍스트 요약기", data.summary);
     } catch (err) {
       setErrorMsg("서버에 연결할 수 없습니다.");
     } finally {
