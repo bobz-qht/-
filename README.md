@@ -351,3 +351,58 @@
 - 홈 화면 카드 클릭 시 `/summarize`, `/login`으로 이동하도록 `next/link` 연결
 - 리뷰에서 발견된 미해결 항목 정리: `day4_pdf_summarizer.py` 텍스트 중복 버그, `day7_pipeline.py` 예외처리 누락, `layout.tsx`의 죽은 Tailwind 클래스 정리
 - 16주차: Vercel 배포
+
+## 4개월차 - 16주차 (Day 11): Vercel 배포 + OCR/유튜브 요약기 추가
+
+### 오늘 만든 것
+- 홈 화면 카드 3개에 `next/link`의 `<Link>` 연결 — 클릭 시 `/summarize`, `/ocr`, `/youtube`로 실제 이동
+- `day4_pdf_summarizer.py` 텍스트 추출 중복 루프 제거
+- `day7_pipeline.py` 웹훅 라우트에 단계별 `try/except` 추가
+- `layout.tsx`/`globals.css`의 죽은 Tailwind 클래스 정리
+- 기존 Python Flask 백엔드(`day10_summarize_api.py`)를 Next.js API Route(`app/api/summarize/route.ts`)로 이식 — 별도 서버 실행 없이 배포 가능한 구조로 전환
+- `lib/anthropic.ts` — Anthropic SDK 클라이언트와 `summarizeText()`를 공용 모듈로 분리, `/api/summarize`·`/api/ocr`·`/api/youtube`가 공통으로 사용
+- `app/api/ocr/route.ts` + `app/ocr/page.tsx` — Tesseract 대신 Claude Vision으로 이미지 텍스트 추출 (서버리스 환경에 맞춰 재설계)
+- `app/api/youtube/route.ts` + `app/youtube/page.tsx` — `youtube-transcript` 패키지로 자막만 추출해 요약 (Whisper/ffmpeg 방식은 서버리스에 부적합해 제외)
+- Vercel에 프로젝트 배포 — Root Directory(`ai-service-landing`), Framework Preset(Next.js), 환경변수(`ANTHROPIC_API_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) 설정
+
+### 배운 것
+- Vercel Root Directory: 저장소 루트에 여러 폴더(`py`, `practice`, `ai-service-landing`)가 같이 있을 때 실제 빌드할 폴더를 명시해야 함
+- Framework Preset은 자동 감지가 실패할 수 있어 수동 설정이 필요할 때가 있음
+- 서버리스 함수(API Route)는 요청마다 새로 실행되고 끝나는 무상태(stateless) 구조 — 항상 켜져 있는 서버가 아님
+- 로컬에서 `npm install`만 하고 `package.json`에 반영/커밋을 안 하면, 로컬은 되는데 배포는 실패하는 "works on my machine" 문제가 생김
+- Vercel 환경변수: `NEXT_PUBLIC_` 접두어가 붙어야 브라우저(Config)에서 읽히고, 안 붙으면 서버 전용(Secret)으로 취급됨
+
+### 막힌 점 / 해결
+- Root Directory 미설정 → 배포된 사이트 첫 화면 404 → Root Directory를 `ai-service-landing`으로 설정해 해결
+- Framework Preset이 "Other"로 고정돼 있어 Root Directory를 고쳐도 404 지속 → Next.js로 수동 변경 후 해결
+- 빌드 실패: `Module not found: Can't resolve '@supabase/supabase-js'` → 커밋된 `package.json`에 해당 의존성이 누락돼 있던 것이 원인 → 로컬의 최신 `package.json`을 다시 푸시해 해결
+
+### 결과
+- 로드맵 16주차 목표(실제 링크로 접속 가능한 배포) 달성
+- 2개월차에 미뤄뒀던 OCR 추출기, 유튜브 요약기까지 완성 — 텍스트 요약기/OCR/유튜브 요약기 3개 도구가 전부 라이브 URL에서 작동 확인 완료
+
+### 다음 목표
+- 4개월차 14주차 로그인 기능 마무리: 회원가입 + 로그인 상태에 따른 UI 분기
+- Supabase에 도구 사용 결과 저장 기능
+
+## 4개월차 - 14주차 마무리 (Day 12): 회원가입 + 로그인 상태 네비게이션
+
+### 오늘 만든 것
+- `app/login/page.tsx` — 로그인/회원가입을 한 폼에서 전환하는 방식으로 확장 (`supabase.auth.signUp` 추가)
+- `app/components/AuthNav.tsx` — 신규 클라이언트 컴포넌트. `getSession()`으로 초기 로그인 상태 확인, `onAuthStateChange()`로 로그인/로그아웃을 실시간 반영, 로그아웃 버튼 포함
+- `app/layout.tsx` — 네비게이션의 고정 "로그인" 링크를 `AuthNav`로 교체해 로그인 상태에 따라 UI가 바뀌도록 변경
+- `app/globals.css` — 로그인 상태 UI 스타일 추가, 중복 정의돼 있던 `.tool-card` 셀렉터 하나로 정리
+
+### 배운 것
+- 세션(session): Supabase Auth가 로그인 성공 시 브라우저에 저장하는 로그인 상태 정보, 새로고침해도 유지되는 이유
+- `useEffect`: 컴포넌트가 화면에 나타날 때 한 번 실행되는 훅, 두 번째 인자 빈 배열(`[]`)의 의미
+- `onAuthStateChange`: 로그인/로그아웃이 발생하는 순간을 실시간으로 감지하는 리스너, `getSession()`만으로는 로그아웃 시 UI가 즉시 안 바뀌는 문제를 보완
+- `useEffect`의 클린업 함수(`return () => {...}`): 컴포넌트가 사라질 때 리스너를 정리해 메모리 누수 방지
+- 구조분해할당에서 이름 바꾸기(`const { data: listener } = ...`)로 의미가 더 명확한 변수명 사용
+
+### 결과
+- 로드맵 14주차 목표(로그인 기능) 완전히 마무리 — 회원가입, 로그인, 로그아웃, 로그인 상태 UI 반영까지 전부 작동 확인
+
+### 다음 목표
+- 로그인한 사용자의 도구 사용 결과를 Supabase DB에 저장하는 기능 (11주차 목표와 연결)
+- 5개월차 진입 전 실제 유저 인터뷰 채널 후보 정리

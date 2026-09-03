@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import AuthNav from "./components/AuthNav";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <nav className="site-nav">
           <Link href="/" className="site-nav-logo">AI 도구 모음</Link>
-          <Link href="/login" className="site-nav-link">로그인</Link>
+          <AuthNav />
         </nav>
         {children}
       </body>

@@ -5,36 +5,48 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
+  const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [infoMsg, setInfoMsg] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrorMsg("");
+    setInfoMsg("");
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    if (mode === "login") {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      setLoading(false);
 
-    setLoading(false);
+      if (error) {
+        setErrorMsg("이메일 또는 비밀번호가 올바르지 않습니다.");
+        return;
+      }
 
-    if (error) {
-      setErrorMsg("이메일 또는 비밀번호가 올바르지 않습니다.");
-      return;
+      router.push("/");
+      router.refresh();
+    } else {
+      const { error } = await supabase.auth.signUp({ email, password });
+      setLoading(false);
+
+      if (error) {
+        setErrorMsg(error.message);
+        return;
+      }
+
+      setInfoMsg("가입 확인 이메일을 보냈습니다. 메일함을 확인해주세요.");
     }
-
-    router.push("/");
   }
 
   return (
     <main className="container">
       <section className="hero">
-        <h1>로그인</h1>
+        <h1>{mode === "login" ? "로그인" : "회원가입"}</h1>
       </section>
 
       <form onSubmit={handleSubmit} className="login-form">
@@ -47,16 +59,29 @@ export default function LoginPage() {
         />
         <input
           type="password"
-          placeholder="비밀번호"
+          placeholder="비밀번호 (6자 이상)"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
         <button type="submit" className="cta-button" disabled={loading}>
-          {loading ? "로그인 중..." : "로그인"}
+          {loading ? "처리 중..." : mode === "login" ? "로그인" : "회원가입"}
         </button>
         {errorMsg && <p className="error-text">{errorMsg}</p>}
+        {infoMsg && <p className="info-text">{infoMsg}</p>}
       </form>
+
+      <button
+        type="button"
+        className="link-button"
+        onClick={() => {
+          setMode(mode === "login" ? "signup" : "login");
+          setErrorMsg("");
+          setInfoMsg("");
+        }}
+      >
+        {mode === "login" ? "계정이 없으신가요? 회원가입" : "이미 계정이 있으신가요? 로그인"}
+      </button>
     </main>
   );
 }
