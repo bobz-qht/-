@@ -31,7 +31,7 @@ export default function LoginPage() {
       router.push("/");
       router.refresh();
     } else {
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { data, error } = await supabase.auth.signUp({ email, password });
       setLoading(false);
 
       if (error) {
@@ -39,7 +39,14 @@ export default function LoginPage() {
         return;
       }
 
-      setInfoMsg("가입 확인 이메일을 보냈습니다. 메일함을 확인해주세요.");
+      if (data.session) {
+        // Confirm email이 꺼져있으면 가입과 동시에 로그인된 상태로 세션이 온다.
+        router.push("/");
+        router.refresh();
+      } else {
+        // Confirm email이 켜져있으면 세션 없이 가입만 되고, 메일 확인이 필요하다.
+        setInfoMsg("가입 확인 이메일을 보냈습니다. 메일함을 확인해주세요.");
+      }
     }
   }
 
