@@ -8,11 +8,9 @@ client = Anthropic()
 
 
 try:
-    reader = PdfReader("sample_report.pdf") 
+    reader = PdfReader("sample_report.pdf")
 
     text = ""
-    for page in reader.pages:
-        text += page.extract_text()
     for i, page in enumerate(reader.pages):
         text += f"\n\n--- Page {i + 1} ---\n\n"
         text += page.extract_text()
@@ -20,6 +18,7 @@ try:
 except Exception as e:
     print(f"Error occurred while reading PDF: {e}")
     text = ""
+
 
 print(text)
 

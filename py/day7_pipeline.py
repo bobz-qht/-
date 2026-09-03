@@ -41,12 +41,22 @@ def webhook():
     if not content:
         return {"error": "content가 없습니다"}, 400
 
-    summary = summarize_text(content)
-    save_event(content, summary)
-    send_notification(summary)
+    try:
+        summary = summarize_text(content)
+    except Exception as e:
+        return {"error": f"요약 실패: {e}"}, 500
+
+    try:
+        save_event(content, summary)
+    except Exception as e:
+        return {"error": f"저장 실패: {e}", "summary": summary}, 500
+
+    try:
+        send_notification(summary)
+    except Exception as e:
+        return {"status": "처리 완료 (알림 실패)", "summary": summary, "notify_error": str(e)}, 200
 
     return {"status": "처리 완료", "summary": summary}
-
 
 if __name__ == "__main__":
     app.run(port=5000)

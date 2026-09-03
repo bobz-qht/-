@@ -1,8 +1,10 @@
+import Link from "next/link";
+
 export default function Home() {
   const tools = [
-    { name: "텍스트 요약기", desc: "긴 글을 3줄로 요약해주는 도구" },
-    { name: "OCR 추출기", desc: "이미지 속 텍스트를 뽑아내는 도구" },
-    { name: "유튜브 요약기", desc: "유튜브 자막을 요약 메모로 바꿔주는 도구" },
+    { name: "텍스트 요약기", desc: "긴 글을 3줄로 요약해주는 도구", href: "/summarize" },
+    { name: "OCR 추출기", desc: "이미지 속 텍스트를 뽑아내는 도구", href: null },
+    { name: "유튜브 요약기", desc: "유튜브 자막을 요약 메모로 바꿔주는 도구", href: null },
   ];
 
   return (
@@ -14,12 +16,20 @@ export default function Home() {
       </section>
 
       <section className="tools">
-        {tools.map((tool) => (
-          <div className="tool-card" key={tool.name}>
-            <h2>{tool.name}</h2>
-            <p>{tool.desc}</p>
-          </div>
-        ))}
+        {tools.map((tool) =>
+          tool.href ? (
+            <Link href={tool.href} className="tool-card" key={tool.name}>
+              <h2>{tool.name}</h2>
+              <p>{tool.desc}</p>
+            </Link>
+          ) : (
+            <div className="tool-card tool-card-disabled" key={tool.name}>
+              <h2>{tool.name}</h2>
+              <p>{tool.desc}</p>
+              <span className="badge">웹 버전 준비중</span>
+            </div>
+          )
+        )}
       </section>
     </main>
   );
